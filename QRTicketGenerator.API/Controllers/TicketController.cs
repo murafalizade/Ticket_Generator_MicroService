@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using QRTicketGenerator.API.Models;
 using QRTicketGenerator.API.Services;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -21,9 +24,14 @@ namespace QRTicketGenerator.API.Controllers
         }
         // GET api/<TicketController>/5
         [HttpGet("{id}")]
-        public string CheckValidation(int id)
+        public async Task<IActionResult> CheckValidationAsync(string id)
         {
-            return "value";
+            Ticket ticket = await _ticketService.ValidateTicket(id);
+            if (ticket == null)
+            {
+                return BadRequest();
+            }
+            return Ok(ticket);
         }
 
         // POST api/<TicketController>
@@ -36,14 +44,23 @@ namespace QRTicketGenerator.API.Controllers
 
         // POST api/<TicketController>
         [HttpPost]
-        public void CreateTicketWithDesign([FromBody] string value)
+        [RequestSizeLimit(200 * 1024 * 1024)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 209715200)]
+        public async  Task<FileContentResult> CreateTicketWithDesign(IFormFile file,[FromQuery] Ticket ticket)
         {
+            await using var memoryStream = new MemoryStream();
+            await file.CopyToAsync(memoryStream);
+            byte[] c = memoryStream.ToArray();
+            byte[] b = await _ticketService.CreateWithDesign(ticket.DelegateName, ticket.EventId, c);
+            return File(b, "application/octet-stream", "ticket.pdf");
         }
 
         // PUT api/<TicketController>/5
         [HttpPut("{id}")]
-        public void ConfirmTicket(int id, [FromBody] string value)
+        public IActionResult ConfirmTicket(string id)
         {
+            _ticketService.ConfirmTicket(id);
+            return NoContent();
         }
     }
 }

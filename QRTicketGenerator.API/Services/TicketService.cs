@@ -14,6 +14,7 @@ namespace QRTicketGenerator.API.Services
     public class TicketService : ITicketService
     {
         private readonly IMongoCollection<Ticket> _tickets;
+        private readonly IMongoCollection<Event> _events;
 
         public TicketService(ITicketDatabaseSettings settings)
         {
@@ -21,39 +22,60 @@ namespace QRTicketGenerator.API.Services
             var database = client.GetDatabase(settings.DatabaseName);
 
             _tickets = database.GetCollection<Ticket>(settings.BooksCollectionName);
+            _events = database.GetCollection<Event>("Events");
         }
 
-        public Task ConfirmTicket(string id)
+        public async Task ConfirmTicket(string id)
         {
-            throw new System.NotImplementedException();
+            Ticket ticket = await _tickets.Find(p => p.Id == id).FirstOrDefaultAsync();
+            ticket.IsConfirmed = true;
+            await _tickets.ReplaceOneAsync(x => x.Id == id, ticket);
         }
 
-        public Task CreateWithDesign()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public async Task<byte[]> CreateWithoutDesign([Optional] string DelegateName, int EventId)
+        public async Task<byte[]> CreateWithDesign([Optional] string DelegateName, string EventId, byte[] b)
         {
             Ticket ticket = new Ticket() { DelegateName = DelegateName, EventId = EventId };
-             await _tickets.InsertOneAsync(ticket);
+            await _tickets.InsertOneAsync(ticket);
             string path = CreateQR(ticket.Id);
-            return CreateTicket(path);
+            string qrCodePath = CreateQR(ticket.Id);
+            using (Stream inputImageStream = new FileStream(qrCodePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                MemoryStream ms = new MemoryStream();
+                var reader = new PdfReader(b);
+                var stamper = new PdfStamper(reader, ms);
+                var pdfContentByte = stamper.GetOverContent(1);
+                iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(inputImageStream);
+                image.SetAbsolutePosition(305, 37);
+                pdfContentByte.AddImage(image);
+                stamper.Close();
+                return ms.ToArray();
+            }
+        }
+
+        public async Task<byte[]> CreateWithoutDesign([Optional] string DelegateName, string EventId)
+        {
+            Ticket ticket = new Ticket() { DelegateName = DelegateName, EventId = EventId };
+            await _tickets.InsertOneAsync(ticket);
+            string path = CreateQR(ticket.Id);
+            using (Stream inputPdfStream = new FileStream("EwA_Ticket_Design.pdf", FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                return CreateTicket(inputPdfStream,path);
+            }
         }
 
         public async Task<Ticket> ValidateTicket(string id)
         {
-           Ticket ticket = await _tickets.Find(p=>p.Id == id).FirstOrDefaultAsync();
-            if (ticket == null)
+            Ticket ticket = await _tickets.Find(p => p.Id == id).FirstOrDefaultAsync();
+            Event eventt = await _events.Find(p => p.Id == ticket.EventId).FirstOrDefaultAsync();
+            if (ticket == null || eventt == null)
             {
                 return null;
             }
             return ticket;
         }
 
-        private byte[] CreateTicket(string qrCodePath)
+        private byte[] CreateTicket(Stream inputPdfStream,string qrCodePath)
         {
-            using (Stream inputPdfStream = new FileStream("EwA_Ticket_Design.pdf", FileMode.Open, FileAccess.Read, FileShare.Read))
             using (Stream inputImageStream = new FileStream(qrCodePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
                 MemoryStream ms = new MemoryStream();

@@ -13,12 +13,8 @@ namespace QRTicketGenerator.API.Models
         public string Id { get; set; }
         [AllowNull]
         public string DelegateName { get; set; }
-        public int EventId { get; set; }
+        public string EventId { get; set; }
         public bool IsConfirmed { get; set; } = false;
 
-        public static implicit operator Task<object>(Ticket v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
