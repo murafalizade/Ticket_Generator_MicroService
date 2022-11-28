@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QRTicketGenerator.API.Dtos;
 using QRTicketGenerator.API.Models;
 using QRTicketGenerator.API.Services;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 namespace QRTicketGenerator.API.Controllers
 {
     [Route("api/[controller]/[action]")]
+    [Authorize]
     [ApiController]
     public class TicketController : ControllerBase
     {
@@ -23,6 +24,7 @@ namespace QRTicketGenerator.API.Controllers
             _ticketService = ticketService;
         }
         // GET api/<TicketController>/5
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> CheckValidationAsync(string id)
         {
@@ -36,26 +38,23 @@ namespace QRTicketGenerator.API.Controllers
 
         // POST api/<TicketController>
         [HttpPost]
-        public async Task<FileContentResult> CreateTicketWithoutDesign([FromBody] Ticket ticket)
+        public async Task<IActionResult> CreateTicketWithoutDesign([FromBody] TicketAttributeDto ticket)
         {
-            byte[] b = await _ticketService.CreateWithoutDesign(ticket.DelegateName,ticket.EventId);
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if (userId == null)
+            {
+                return Forbid();
+            }
+            byte[] b = await _ticketService.CreateTicketFile(ticket,userId);
+            if(b == null)
+            {
+                return BadRequest("You don't have enough coin");
+            }
             return  File(b, "application/octet-stream", "ticket.pdf");
         }
 
-        // POST api/<TicketController>
-        [HttpPost]
-        [RequestSizeLimit(200 * 1024 * 1024)]
-        [RequestFormLimits(MultipartBodyLengthLimit = 209715200)]
-        public async  Task<FileContentResult> CreateTicketWithDesign(IFormFile file,[FromQuery] Ticket ticket)
-        {
-            await using var memoryStream = new MemoryStream();
-            await file.CopyToAsync(memoryStream);
-            byte[] c = memoryStream.ToArray();
-            byte[] b = await _ticketService.CreateWithDesign(ticket.DelegateName, ticket.EventId, c);
-            return File(b, "application/octet-stream", "ticket.pdf");
-        }
-
         // PUT api/<TicketController>/5
+        [AllowAnonymous]
         [HttpPut("{id}")]
         public IActionResult ConfirmTicket(string id)
         {

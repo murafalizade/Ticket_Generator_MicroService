@@ -1,19 +1,14 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using QRTicketGenerator.API.Data;
 using QRTicketGenerator.API.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Swashbuckle.AspNetCore.Filters;
 
 namespace QRTicketGenerator.API
 {
@@ -29,6 +24,16 @@ namespace QRTicketGenerator.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+                option =>
+                {
+                    option.Authority = "https://localhost:5001";
+                    //option.Audience = "Ticket_aud";
+                                    option.Audience = "https://localhost:5001/resources";
+
+                    option.RequireHttpsMetadata = false;
+
+                });
             services.Configure<TicketDatabaseSettings>(
       Configuration.GetSection(nameof(TicketDatabaseSettings)));
 
@@ -36,10 +41,21 @@ namespace QRTicketGenerator.API
                 sp.GetRequiredService<IOptions<TicketDatabaseSettings>>().Value);
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<IEventService, EventService>();
+            services.AddScoped<ITicketDesignService, TicketDesignService>();
+            services.AddAutoMapper(typeof(Program));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "QRTicketGenerator.API", Version = "v1" });
+                c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Bearer",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey
+                }
+                    );
+                c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
         }
 
@@ -56,6 +72,8 @@ namespace QRTicketGenerator.API
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

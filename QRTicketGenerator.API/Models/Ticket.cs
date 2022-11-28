@@ -15,6 +15,5 @@ namespace QRTicketGenerator.API.Models
         public string DelegateName { get; set; }
         public string EventId { get; set; }
         public bool IsConfirmed { get; set; } = false;
-
     }
 }

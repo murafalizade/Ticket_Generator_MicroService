@@ -3,10 +3,10 @@ using iTextSharp.text.pdf;
 using MongoDB.Driver;
 using QRCoder;
 using QRTicketGenerator.API.Data;
+using QRTicketGenerator.API.Dtos;
 using QRTicketGenerator.API.Models;
 using System.Drawing;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace QRTicketGenerator.API.Services
@@ -15,14 +15,17 @@ namespace QRTicketGenerator.API.Services
     {
         private readonly IMongoCollection<Ticket> _tickets;
         private readonly IMongoCollection<Event> _events;
+        private readonly IMongoCollection<TicketDesign> _ticketDesigns;
+        private readonly IMongoCollection<User> _users;
 
         public TicketService(ITicketDatabaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
-
+            _users = database.GetCollection<User>("Users");
             _tickets = database.GetCollection<Ticket>(settings.BooksCollectionName);
             _events = database.GetCollection<Event>("Events");
+            _ticketDesigns = database.GetCollection<TicketDesign>("TicketDeisgns");
         }
 
         public async Task ConfirmTicket(string id)
@@ -31,35 +34,40 @@ namespace QRTicketGenerator.API.Services
             ticket.IsConfirmed = true;
             await _tickets.ReplaceOneAsync(x => x.Id == id, ticket);
         }
-
-        public async Task<byte[]> CreateWithDesign([Optional] string DelegateName, string EventId, byte[] b)
+        public async Task<byte[]> CreateTicketFile(TicketAttributeDto ticket,string userId)
         {
-            Ticket ticket = new Ticket() { DelegateName = DelegateName, EventId = EventId };
-            await _tickets.InsertOneAsync(ticket);
-            string path = CreateQR(ticket.Id);
-            string qrCodePath = CreateQR(ticket.Id);
-            using (Stream inputImageStream = new FileStream(qrCodePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            // Create event for decreasing coin count in microservice in rabbitmq
+            //string userId = "3b2d5ef9-8e89-492f-9919-b6cf273255ec";
+            User user = await _users.Find(p => p.Id == userId).FirstOrDefaultAsync();
+            if (user == null)
             {
-                MemoryStream ms = new MemoryStream();
-                var reader = new PdfReader(b);
-                var stamper = new PdfStamper(reader, ms);
-                var pdfContentByte = stamper.GetOverContent(1);
-                iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(inputImageStream);
-                image.SetAbsolutePosition(305, 37);
-                pdfContentByte.AddImage(image);
-                stamper.Close();
-                return ms.ToArray();
+                return null;
             }
-        }
-
-        public async Task<byte[]> CreateWithoutDesign([Optional] string DelegateName, string EventId)
-        {
-            Ticket ticket = new Ticket() { DelegateName = DelegateName, EventId = EventId };
-            await _tickets.InsertOneAsync(ticket);
-            string path = CreateQR(ticket.Id);
-            using (Stream inputPdfStream = new FileStream("EwA_Ticket_Design.pdf", FileMode.Open, FileAccess.Read, FileShare.Read))
+            if(user.CoinCount == 0)
             {
-                return CreateTicket(inputPdfStream,path);
+                return null;
+            }
+            Event e = await _events.Find(p => p.Id == ticket.EventId).FirstOrDefaultAsync();
+            if (e == null)
+            {
+                return null;
+            }
+            Ticket tickets = new Ticket() { DelegateName = ticket.DelegateName, EventId = ticket.EventId };
+            await _tickets.InsertOneAsync(tickets);
+            string path = CreateQR(tickets.Id);
+            TicketDesign ticketDesign = await _ticketDesigns.Find(p => p.Id == ticket.TicketDesignId).FirstOrDefaultAsync();
+            if (ticketDesign == null)
+            {
+                return null;
+            }
+            using (Stream inputPdfStream = new FileStream(ticketDesign.DesignFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            using (var memoryStream = new MemoryStream())
+            {
+                inputPdfStream.CopyTo(memoryStream);
+                byte[] b = memoryStream.ToArray();
+                user.CoinCount--;
+                await _users.ReplaceOneAsync(x => x.Id == userId, user);
+                return CreateTicket(b, path, ticketDesign ,ticket);
             }
         }
 
@@ -74,7 +82,7 @@ namespace QRTicketGenerator.API.Services
             return ticket;
         }
 
-        private byte[] CreateTicket(Stream inputPdfStream,string qrCodePath)
+        private byte[] CreateTicket(byte[] inputPdfStream, string qrCodePath,TicketDesign ticketDesign , TicketAttributeDto ticketValue)
         {
             using (Stream inputImageStream = new FileStream(qrCodePath, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
@@ -82,10 +90,30 @@ namespace QRTicketGenerator.API.Services
                 var reader = new PdfReader(inputPdfStream);
                 var stamper = new PdfStamper(reader, ms);
                 var pdfContentByte = stamper.GetOverContent(1);
-
                 iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(inputImageStream);
-                image.SetAbsolutePosition(305, 37);
+                image.SetAbsolutePosition(ticketDesign.QrCodeX, ticketDesign.QrCodeY);
                 pdfContentByte.AddImage(image);
+
+                BaseFont bf = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.NOT_EMBEDDED);
+                // Value 1
+                pdfContentByte.SetFontAndSize(bf, ticketDesign.fontSize1);
+                pdfContentByte.SetColorFill(BaseColor.Black);
+                pdfContentByte.BeginText();
+                pdfContentByte.ShowTextAligned(1, ticketValue.Value1, ticketDesign.PositionX1, ticketDesign.PositionY1, 0);
+                pdfContentByte.SetColorFill(BaseColor.Black);
+                // Value 2
+                pdfContentByte.SetFontAndSize(bf, ticketDesign.fontSize2);
+                pdfContentByte.SetColorFill(BaseColor.Black);
+                pdfContentByte.ShowTextAligned(1, ticketValue.Value2, ticketDesign.PositionX2, ticketDesign.PositionY2, 0);
+                // Value 3
+                pdfContentByte.SetFontAndSize(bf, ticketDesign.fontSize3);
+                pdfContentByte.ShowTextAligned(1, ticketValue.Value3, ticketDesign.PositionX3, ticketDesign.PositionY3, 0);
+                pdfContentByte.SetColorFill(BaseColor.Black);
+                // Value 4
+                pdfContentByte.SetFontAndSize(bf, ticketDesign.fontSize4);
+                pdfContentByte.ShowTextAligned(1, ticketValue.Value4, ticketDesign.PositionX4, ticketDesign.PositionY4, 0);
+
+                pdfContentByte.EndText();
                 stamper.Close();
                 return ms.ToArray();
             }

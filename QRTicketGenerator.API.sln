@@ -3,7 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTicketGenerator.API", "QRTicketGenerator.API\QRTicketGenerator.API.csproj", "{A1CF2F70-5F4A-4B90-99AF-20FE666314AB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QRTicketGenerator.API", "QRTicketGenerator.API\QRTicketGenerator.API.csproj", "{A1CF2F70-5F4A-4B90-99AF-20FE666314AB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{8220A3BB-098F-4E85-B055-CEF104DBBD85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityServer", "IdentityServer", "{CE452FDB-EF22-4935-BAFA-6E724FF43AB0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QRTicketGenerator.IdentityServer", "Project2\QRTicketGenerator.IdentityServer.csproj", "{39E29BBF-749C-42AF-90D3-D59189659B71}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{85870EF9-E6EE-4346-94E3-12B0EFD05495}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTicketGenerator.Shared", "QRTicketGenerator.Shared\QRTicketGenerator.Shared.csproj", "{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +25,22 @@ Global
 		{A1CF2F70-5F4A-4B90-99AF-20FE666314AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1CF2F70-5F4A-4B90-99AF-20FE666314AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1CF2F70-5F4A-4B90-99AF-20FE666314AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39E29BBF-749C-42AF-90D3-D59189659B71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39E29BBF-749C-42AF-90D3-D59189659B71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39E29BBF-749C-42AF-90D3-D59189659B71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39E29BBF-749C-42AF-90D3-D59189659B71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A1CF2F70-5F4A-4B90-99AF-20FE666314AB} = {8220A3BB-098F-4E85-B055-CEF104DBBD85}
+		{39E29BBF-749C-42AF-90D3-D59189659B71} = {CE452FDB-EF22-4935-BAFA-6E724FF43AB0}
+		{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA} = {85870EF9-E6EE-4346-94E3-12B0EFD05495}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50E2DC96-F9FA-489C-9DE9-A76EB757AD1A}

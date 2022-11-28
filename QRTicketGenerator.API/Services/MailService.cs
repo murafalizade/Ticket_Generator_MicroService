@@ -1,19 +1,29 @@
-﻿using System.Net;
+﻿using QRTicketGenerator.API.Dtos;
+using System.IO;
+using System.Net;
 using System.Net.Mail;
 
 namespace QRTicketGenerator.API.Services
 {
-    public class MailDataervice
+    public class MailService
     {
-        public static void SendEmail(string mailAddress, string fullName)
+        public static void SendEmail(MailSenderDto obj, byte[] file)
         {
             MailMessage message = new MailMessage();
             SmtpClient smtp = new SmtpClient();
             message.From = new MailAddress("muradexample7@gmail.com");
-            message.To.Add(new MailAddress(mailAddress));
-            message.Subject = "Information";
-            message.Body = $"Thank {fullName} for participate our forum.";
-            message.Attachments.Add(new Attachment("resultqr.pdf"));
+            message.To.Add(new MailAddress(obj.To));
+            message.Subject = obj.Subject;
+            message.Body = obj.Body;
+            if (obj.ToCC != null && obj.ToCC != "")
+            {
+                message.CC.Add(new MailAddress(obj.ToCC));
+            }
+            if (obj.ToBCC != null && obj.ToBCC != "")
+            {
+                message.Bcc.Add(new MailAddress(obj.ToBCC));
+            }
+            message.Attachments.Add(new Attachment(new MemoryStream(file), "Ticket.pdf"));
             smtp.Port = 587;
             smtp.Host = "smtp.gmail.com"; //for gmail host  
             smtp.EnableSsl = true;

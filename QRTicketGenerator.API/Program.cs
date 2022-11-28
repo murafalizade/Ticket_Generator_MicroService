@@ -20,7 +20,9 @@ namespace QRTicketGenerator.API
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseUrls("https://localhost:34469/");
                     webBuilder.UseStartup<Startup>();
+
                 });
     }
 }
