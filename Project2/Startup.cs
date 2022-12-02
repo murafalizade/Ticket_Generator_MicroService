@@ -3,6 +3,7 @@
 
 
 using IdentityServer4;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -29,6 +30,17 @@ namespace Project2
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+
+            services.AddMassTransit(x =>
+
+                x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host("localhost", "/", host =>
+                 {
+                     host.Username("guest");
+                     host.Password("guest");
+                 });
+            }));
 
             string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>

@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MassTransit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project2.Models;
 using QRTicketGenerator.IdentityServer.Dtos;
+using QRTicketGenerator.Shared.Messages;
+using System;
 using System.Threading.Tasks;
 
 namespace Project2.Controllers
@@ -12,12 +14,14 @@ namespace Project2.Controllers
     public class SignupController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public SignupController(UserManager<ApplicationUser> userManager)
+        private readonly ISendEndpointProvider _sendEndPointProvider;
+        public SignupController(UserManager<ApplicationUser> userManager,ISendEndpointProvider sendEndpointProvider)
         {
             _userManager = userManager;
+            _sendEndPointProvider = sendEndpointProvider;
         }
 
-        [HttpGet]
+        [HttpGet("userId")]
         public async Task<IActionResult> GetUser(string userId)
         {
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
@@ -29,14 +33,23 @@ namespace Project2.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Signup(SignupDto singupDto)
+        public async Task<IActionResult> Signup([FromBody] SignupDto singupDto)
         {
+            var sendEndPoint = await _sendEndPointProvider.GetSendEndpoint(new Uri("queue:user-create-server"));
             ApplicationUser user = new ApplicationUser()
             {
                 UserName = singupDto.UserName,
                 Email = singupDto.Email,
             };
+            UserCreateCommand userCreateCommand = new UserCreateCommand()
+            {
+                Id = user.Id,
+                CoinCount = user.CoinCount,
+                isPremium = user.IsPremium,
+            };
+            await sendEndPoint.Send(userCreateCommand);
             await _userManager.CreateAsync(user,singupDto.Password);
+            
             return NoContent();
         }
     }

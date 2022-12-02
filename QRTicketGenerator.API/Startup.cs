@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using QRTicketGenerator.API.Consumers;
 using QRTicketGenerator.API.Data;
 using QRTicketGenerator.API.Services;
 using Swashbuckle.AspNetCore.Filters;
@@ -24,12 +26,39 @@ namespace QRTicketGenerator.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddMassTransit(x =>
+            {
+
+                x.AddConsumer<UserCreateCommandConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", host =>
+                    {
+                        host.Username("guest");
+                        host.Password("guest");
+                    });
+
+                    cfg.ReceiveEndpoint("user-create-server", e =>
+                    {
+                        e.ConfigureConsumer<UserCreateCommandConsumer>(context);
+                    });
+
+                });
+            });
+
+            services.AddMassTransitHostedService();
+
+
+
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 option =>
                 {
                     option.Authority = "https://localhost:5001";
                     //option.Audience = "Ticket_aud";
-                                    option.Audience = "https://localhost:5001/resources";
+                    option.Audience = "https://localhost:5001/resources";
 
                     option.RequireHttpsMetadata = false;
 
