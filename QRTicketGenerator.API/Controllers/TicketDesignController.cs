@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QRTicketGenerator.API.Dtos;
-using QRTicketGenerator.API.Models;
 using QRTicketGenerator.API.Services;
 using QRTicketGenerator.Shared.ControllerBases;
 using System;
@@ -11,7 +10,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace QRTicketGenerator.API.Controllers
 {

@@ -10,10 +10,7 @@
 
         public Order()
         {
-           if(Count >= Product.MinCount)
-            {
-                TotalPrice = Product.MinCount * Count;
-            }
+            TotalPrice = Product.Price * Count;
         }
     }
 }

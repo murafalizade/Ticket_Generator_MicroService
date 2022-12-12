@@ -14,6 +14,10 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace QRTicketGenerator.API
 {
+    public interface ISecondBus :
+    IBus
+{
+}
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -44,22 +48,36 @@ namespace QRTicketGenerator.API
                     {
                         e.ConfigureConsumer<UserCreateCommandConsumer>(context);
                     });
-
                 });
             });
 
-            services.AddMassTransitHostedService();
+            services.AddMassTransit<ISecondBus>(x =>
+            {
+                x.AddConsumer<UserUpdateCommandConsumer>();
 
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", host =>
+                    {
+                        host.Username("guest");
+                        host.Password("guest");
+                    });
 
+                    cfg.ReceiveEndpoint("user-update-server", e =>
+                    {
+                        e.ConfigureConsumer<UserUpdateCommandConsumer>(context);
+                    });
+                });
+            });
 
+            //services.AddMassTransitHostedService();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 option =>
                 {
                     option.Authority = "https://localhost:5001";
-                    //option.Audience = "Ticket_aud";
-                    option.Audience = "https://localhost:5001/resources";
-
+                    option.Audience = "Ticket_aud";
+                    //option.Audience = "https://localhost:5001/resources";
                     option.RequireHttpsMetadata = false;
 
                 });

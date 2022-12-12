@@ -13,9 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QRTicketGenerator.IdentityS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{85870EF9-E6EE-4346-94E3-12B0EFD05495}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTicketGenerator.Shared", "QRTicketGenerator.Shared\QRTicketGenerator.Shared.csproj", "{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QRTicketGenerator.Shared", "QRTicketGenerator.Shared\QRTicketGenerator.Shared.csproj", "{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTicketGenerator.Orders", "QRTicketGenerator.Orders\QRTicketGenerator.Orders.csproj", "{58FA60CC-65B8-4F70-8879-CADFF8D4728D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QRTicketGenerator.Orders", "QRTicketGenerator.Orders\QRTicketGenerator.Orders.csproj", "{58FA60CC-65B8-4F70-8879-CADFF8D4728D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Gateway", "Gateway", "{42A7CAAC-0E73-4387-BAA8-EB3B90CB28EB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QRTicketGenerator.Gateway", "QRTicketGenerator.Gateway\QRTicketGenerator.Gateway.csproj", "{961466DE-D70F-4AFF-B9E6-DC392687CAFE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +43,10 @@ Global
 		{58FA60CC-65B8-4F70-8879-CADFF8D4728D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58FA60CC-65B8-4F70-8879-CADFF8D4728D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58FA60CC-65B8-4F70-8879-CADFF8D4728D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{961466DE-D70F-4AFF-B9E6-DC392687CAFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{961466DE-D70F-4AFF-B9E6-DC392687CAFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{961466DE-D70F-4AFF-B9E6-DC392687CAFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{961466DE-D70F-4AFF-B9E6-DC392687CAFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +56,7 @@ Global
 		{39E29BBF-749C-42AF-90D3-D59189659B71} = {CE452FDB-EF22-4935-BAFA-6E724FF43AB0}
 		{B7A4846A-5E42-4D96-ADF9-DE2817CEEBEA} = {85870EF9-E6EE-4346-94E3-12B0EFD05495}
 		{58FA60CC-65B8-4F70-8879-CADFF8D4728D} = {8220A3BB-098F-4E85-B055-CEF104DBBD85}
+		{961466DE-D70F-4AFF-B9E6-DC392687CAFE} = {42A7CAAC-0E73-4387-BAA8-EB3B90CB28EB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {50E2DC96-F9FA-489C-9DE9-A76EB757AD1A}

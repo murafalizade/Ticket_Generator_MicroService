@@ -25,6 +25,13 @@ namespace QRTicketGenerator.API.Controllers
         }
         // GET api/<TicketController>/5
         [AllowAnonymous]
+        [HttpGet]
+        public IActionResult TryE()
+        {
+            return Ok("Everything is working");
+        }
+
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<IActionResult> CheckValidationAsync(string id)
         {

@@ -14,6 +14,8 @@ namespace Project2
             {
                 new ApiResource("Ticket_aud"){Scopes={"Ticket_fullpermissions" } },
                 new ApiResource("Cron_job_aud"){Scopes={"Cronjob_fullpermissions" } },
+                new ApiResource("gateway_aud"){Scopes={"gateway_fullpermissions" } },
+                new ApiResource("Order_aud"){Scopes={"Order_fullpermissions"}},
                 new ApiResource (IdentityServerConstants.LocalApi.ScopeName)
             };
         public static IEnumerable<IdentityResource> IdentityResources =>
@@ -30,6 +32,8 @@ namespace Project2
             {
                 new ApiScope("Ticket_fullpermissions"),
                 new ApiScope("Cronjob_fullpermissions"),
+                new ApiScope("gateway_fullpermissions"),
+                new ApiScope("Order_fullpermissions"),
                 new ApiScope(IdentityServerConstants.LocalApi.ScopeName)
             };
 
@@ -44,16 +48,17 @@ namespace Project2
                     ClientSecrets = { new Secret("49C1A7E1-murad-0C7998FB86B0".Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    AllowedScopes = { "Ticket_fullpermissions", "Cronjob_fullpermissions", IdentityServerConstants.LocalApi.ScopeName }
+                    AllowedScopes = { "Ticket_fullpermissions", "gateway_fullpermissions", IdentityServerConstants.LocalApi.ScopeName }
                 },
                 new Client
                 {
                     ClientId = "ReactClientForUser",
-                    ClientSecrets = {new Secret("skjdalsdkjlkajdskllkwjiqw".Sha256())},
+                    ClientSecrets = {new Secret("49C1A7E1-murad-0C7998FB86B0".Sha256())},
                     AllowOfflineAccess = true,
                     // allow scope add profile email of user
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AllowedScopes = {IdentityServerConstants.StandardScopes.Email, IdentityServerConstants.StandardScopes.Profile,
+                    "Ticket_fullpermissions", "gateway_fullpermissions", IdentityServerConstants.LocalApi.ScopeName, "Order_fullpermissions",
                      IdentityServerConstants.StandardScopes.OpenId,IdentityServerConstants.StandardScopes.OfflineAccess,"roles"},
                      RefreshTokenUsage = TokenUsage.ReUse,
                 }
