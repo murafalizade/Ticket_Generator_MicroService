@@ -4,12 +4,16 @@
 
 using IdentityServer4;
 using IdentityServer4.Models;
+using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
 namespace Project2
 {
     public static class Config
     {
+        // Implement IConfiguration in this code
+
+
         public static IEnumerable<ApiResource> ApiResources => new ApiResource[]
             {
                 new ApiResource("Ticket_aud"){Scopes={"Ticket_fullpermissions" } },
@@ -40,25 +44,29 @@ namespace Project2
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
-
-                // interactive client using code flow + pkce
                 new Client
                 {
                     ClientId = "ReactClient",
-                    ClientSecrets = { new Secret("49C1A7E1-murad-0C7998FB86B0".Sha256()) },
+                    //ClientId = Startup.InitializeConfig.GetSection("SecretkeyIdendity:ClinetId").Value,
+                    ClientSecrets = { new Secret("49C1A7E1-murad-0C7998FB86B01979superzor..!"
+                        //Startup.InitializeConfig.GetSection("SecretkeyIdendity:ClientSecret").Value
+                        .Sha256()) },
 
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     AllowedScopes = { "Ticket_fullpermissions", "gateway_fullpermissions", IdentityServerConstants.LocalApi.ScopeName }
                 },
                 new Client
                 {
-                    ClientId = "ReactClientForUser",
-                    ClientSecrets = {new Secret("49C1A7E1-murad-0C7998FB86B0".Sha256())},
+                    ClientId ="ReactClientForUser",
+                    // Startup.InitializeConfig.GetSection("SecretkeyIdendity:ClientIdUser").Value,
+                    ClientSecrets = { new Secret("49C1A7E1-murad-0C7998FB86B01979superzor..!"
+                        //Startup.InitializeConfig.GetSection("SecretkeyIdendity:ClientSecret").Value
+                        .Sha256()) },
                     AllowOfflineAccess = true,
                     // allow scope add profile email of user
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                    AllowedScopes = {IdentityServerConstants.StandardScopes.Email, IdentityServerConstants.StandardScopes.Profile,
-                    "Ticket_fullpermissions", "gateway_fullpermissions", IdentityServerConstants.LocalApi.ScopeName, "Order_fullpermissions",
+                    AllowedScopes = {IdentityServerConstants.StandardScopes.Email, IdentityServerConstants.StandardScopes.Profile, " Order_fullpermissions",
+                    " Ticket_fullpermissions", " gateway_fullpermissions", IdentityServerConstants.LocalApi.ScopeName,
                      IdentityServerConstants.StandardScopes.OpenId,IdentityServerConstants.StandardScopes.OfflineAccess,"roles"},
                      RefreshTokenUsage = TokenUsage.ReUse,
                 }

@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QRTicketGenerator.API.Dtos;
 using QRTicketGenerator.API.Models;
 using QRTicketGenerator.API.Services;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -57,7 +55,7 @@ namespace QRTicketGenerator.API.Controllers
             {
                 return BadRequest("You don't have enough coin");
             }
-            return  File(b, "application/octet-stream", "ticket.pdf");
+            return  File(b, "application/pdf", "ticket.pdf");
         }
 
         // PUT api/<TicketController>/5

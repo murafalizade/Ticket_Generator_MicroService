@@ -1,4 +1,5 @@
 using MassTransit;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,15 +29,7 @@ namespace QRTicketGenerator.Orders
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddAuthentication().AddJwtBearer(option =>
-            {
-               option.Authority = "https://localhost:5001";
-               option.Audience = "Order_aud";
-               //option.Audience = "https://localhost:5001/resources";
-               option.RequireHttpsMetadata = false;
-            });
-
+        { 
             services.AddMassTransit(x =>
 
               x.UsingRabbitMq((context, cfg) =>
@@ -46,6 +40,16 @@ namespace QRTicketGenerator.Orders
                       host.Password("guest");
                   });
               }));
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+                option =>
+                {
+                    option.Authority = "https://localhost:5001";
+                    option.Audience = "Order_aud";
+                    //option.Audience = "https://localhost:5001/resources";
+                    option.RequireHttpsMetadata = false;
+
+                });
 
             string mySqlConnectionStr = Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -83,9 +87,9 @@ namespace QRTicketGenerator.Orders
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

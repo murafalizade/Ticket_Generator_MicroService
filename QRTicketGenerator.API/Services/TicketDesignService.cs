@@ -5,8 +5,7 @@ using QRTicketGenerator.API.Dtos;
 using QRTicketGenerator.API.Models;
 using QRTicketGenerator.Shared;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
+using System.IO; 
 using System.Threading.Tasks;
 
 namespace QRTicketGenerator.API.Services
@@ -58,25 +57,6 @@ namespace QRTicketGenerator.API.Services
             }
             TicketDesign ticketDesign = await _ticketDesigns.Find(x => x.Id == id && x.Userid == userId).FirstOrDefaultAsync();
             return ResponseDto<TicketDesign>.Success(ticketDesign, 200);
-        }
-
-        public void PdfConverter(byte[] file, string outputPath)
-        {
-            iTextSharp.text.Rectangle pageSize = null;
-            MemoryStream ms = new MemoryStream();
-            MemoryStream imageStream = new MemoryStream(file);
-            using (var image = new Bitmap(imageStream))
-            {
-                pageSize = new iTextSharp.text.Rectangle(0, 0, image.Width, image.Height);
-            }
-            var document = new iTextSharp.text.Document(pageSize, 0, 0, 0, 0);
-            iTextSharp.text.pdf.PdfWriter.GetInstance(document, ms).SetFullCompression();
-            document.Open();
-            var imageProps = iTextSharp.text.Image.GetInstance(file);
-            document.Add(imageProps);
-            document.Close();
-            File.WriteAllBytes(outputPath, ms.ToArray());
-
         }
 
         public async Task<ResponseDto<NoContent>> Delete(string id, string userId)

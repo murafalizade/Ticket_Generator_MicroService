@@ -1,0 +1,37 @@
+version:  "5.0.0"
+services:
+    APIDb:
+      image: "mongo:4.0.4"
+      container_name: "APIDb"
+      volumes:
+        - "APIDb_volume:/data/db"
+      ports:
+       -"27017:27017"
+    OrderDb:
+      image: "mysql:8.0.31"
+      container_name: "OrderDb"
+      volumes:
+        - "OrderDb_volume:/var/lib/mysql"
+      ports:
+        -"3306:3306"
+    IdentityDb:
+      image: "mysql:8.0.31"
+      container_name: "IdentityDb"
+      volumes:
+        - "IdentityDb_volume:/var/lib/mysql"
+      ports:
+        -"3307:3306"
+    rabbitmq:
+      image: "rabbitmq:3.7.7-management"
+      container_name: "rabbitmq"
+      volumes:
+        - "rabbitmq_volume:/var/lib/rabbitmq"
+      ports:
+        -"5672:5672"
+        -"15672:15672"
+volume:
+    APIDb_volume:
+    OrderDb_volume:
+    IdentityDb_volume:
+    rabbitmq_volume:
+

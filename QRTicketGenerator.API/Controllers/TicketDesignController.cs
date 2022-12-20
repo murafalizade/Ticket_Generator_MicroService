@@ -1,11 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QRTicketGenerator.API.Dtos;
 using QRTicketGenerator.API.Services;
 using QRTicketGenerator.Shared.ControllerBases;
-using System;
-using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -42,46 +39,17 @@ namespace QRTicketGenerator.API.Controllers
 
         // POST api/<TicketDesignController>
         [HttpPost]
-        [RequestSizeLimit(200 * 1024 * 1024)]
-        [RequestFormLimits(MultipartBodyLengthLimit = 209715200)]
-        public async Task<IActionResult> Post(IFormFile file, [FromQuery] TicketDesignDto value)
+        public async Task<IActionResult> Post([FromBody] TicketDesignDto value)
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            // save file to uploads folder
-            if(file == null)
-            {
-                return BadRequest("File is missing");
-            }
-            string fileName = Guid.NewGuid().ToString() + ".pdf";
-            string filePath = "uploads/" + fileName;
-
-            using (var ms = new MemoryStream())
-            {
-                file.CopyTo(ms);
-                _ticketDesignService.PdfConverter(ms.ToArray(), filePath);
-            }
-
-            value.DesignFilePath = filePath;
             return CreateActionResultInstance(await _ticketDesignService.Create(value, userId));
         }
 
         // PUT api/<TicketDesignController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(IFormFile file, [FromQuery] UpdateTicketDesignDto value)
+        public async Task<IActionResult> Update([FromBody] UpdateTicketDesignDto value)
         {
             var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            // save file to uploads folder
-            if (file != null)
-            {
-                string fileName = Guid.NewGuid().ToString() + ".pdf";
-                string filePath = "uploads/" + fileName;
-                using (var ms = new MemoryStream())
-                {
-                    file.CopyTo(ms);
-                    _ticketDesignService.PdfConverter(ms.ToArray(), filePath);
-                }
-                value.DesignFilePath = filePath;
-            }
             return CreateActionResultInstance(await _ticketDesignService.Update(value, userId));
         }
 

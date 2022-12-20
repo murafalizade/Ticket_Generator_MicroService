@@ -71,13 +71,13 @@ namespace QRTicketGenerator.API
             });
 
             //services.AddMassTransitHostedService();
-
+ 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
                 option =>
                 {
                     option.Authority = "https://localhost:5001";
                     option.Audience = "Ticket_aud";
-                    //option.Audience = "https://localhost:5001/resources";
+                    option.Audience = "https://localhost:5001/resources";
                     option.RequireHttpsMetadata = false;
 
                 });
@@ -89,6 +89,7 @@ namespace QRTicketGenerator.API
             services.AddScoped<ITicketService, TicketService>();
             services.AddScoped<IEventService, EventService>();
             services.AddScoped<ITicketDesignService, TicketDesignService>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddAutoMapper(typeof(Program));
             services.AddControllers();
             services.AddSwaggerGen(c =>

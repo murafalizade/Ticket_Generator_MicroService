@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace QRTicketGenerator.Orders.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
         private readonly IProductRepository _productRepository;

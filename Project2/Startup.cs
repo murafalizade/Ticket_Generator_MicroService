@@ -27,6 +27,8 @@ namespace Project2
             Configuration = configuration;
         }
 
+        public static IConfiguration InitializeConfig { get; private set; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();

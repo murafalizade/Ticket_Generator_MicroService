@@ -6,6 +6,6 @@ namespace Project2.Models
     public class ApplicationUser : IdentityUser
     {
         public bool IsPremium { get; set; } = false;
-        public int CoinCount { get; set; } = 10;
+        public int CoinCount { get; set; } = 1000;
     }
 }

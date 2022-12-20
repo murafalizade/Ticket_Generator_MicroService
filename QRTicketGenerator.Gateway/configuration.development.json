@@ -2,7 +2,7 @@
   "Routes": [
     {
       "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "http",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
@@ -11,7 +11,7 @@
       ],
       "UpstreamPathTemplate": "/services/ticket/{everything}",
       "UpstreamHttpMethod": [ "Get", "Put", "Post", "Delete" ],
-      "UpstreamScheme": "http",
+      "UpstreamScheme": "https",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "GatewayIdenditySchema",
         "AllowedScopes": [ "Ticket_fullpermissions" ]
@@ -19,7 +19,7 @@
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "http",
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
@@ -28,7 +28,7 @@
       ],
       "UpstreamPathTemplate": "/services/order/{everything}",
       "UpstreamHttpMethod": [ "Get", "Put", "Post", "Delete" ],
-      "UpstreamScheme": "http",
+      "UpstreamScheme": "https",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "GatewayIdenditySchema",
         "AllowedScopes": [ "Order_fullpermissions" ]

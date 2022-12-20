@@ -11,8 +11,8 @@ using System.Threading.Tasks;
 namespace QRTicketGenerator.Orders.Controllers
 {
     [ApiController]
+    [Route("api/[controller]")]
     [Authorize]
-    [Route("[controller]")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;

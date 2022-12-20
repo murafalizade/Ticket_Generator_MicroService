@@ -1,0 +1,16 @@
+version:  "5.0.0"
+services:
+    APIDb:
+      image: "mongo:4.0.4"
+    OrderDb:
+      image: "mysql:8.0.31"
+    IdentityDb:
+      image: "mysql:8.0.31"
+    rabbitmq:
+      image: "rabbitmq:3.7.7-management"
+volume:
+    APIDb_volume:
+    OrderDb_volume:
+    IdentityDb_volume:
+    rabbitmq_volume:
+

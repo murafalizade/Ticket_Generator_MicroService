@@ -16,7 +16,17 @@ class OrderRepository :IOrderRepository
     public async Task AddOrder(OrderCreateDto order,string userId)
     {
         var orderToAdd = _mapper.Map<Order>(order);
+        Product product = await _context.Products.FirstOrDefaultAsync(p => p.Id == order.ProductId);
         orderToAdd.UserId = userId;
+        if(order.Count >= product.MinCount)
+        {
+            orderToAdd.TotalPrice = product.Price * order.Count;
+        }
+        else
+        {
+            orderToAdd.TotalPrice = 0.3 * order.Count;
+        }
+
         await _context.Orders.AddAsync(orderToAdd);
         await _context.SaveChangesAsync();
     }
@@ -28,7 +38,7 @@ class OrderRepository :IOrderRepository
     }
     public async Task<List<Order>> GetAllOrders()
     {
-        return await _context.Orders.ToListAsync();
+        return await _context.Orders.Include(i => i.Product).ToListAsync();
     }
     public async Task<Order> GetOrderById(int id)
     {
