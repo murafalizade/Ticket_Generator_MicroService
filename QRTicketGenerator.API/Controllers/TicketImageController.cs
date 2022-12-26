@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using QRTicketGenerator.API.Services;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -21,6 +22,7 @@ namespace QRTicketGenerator.API.Controllers
         }
 
         // GET api/<TicketImageController>/5
+        [AllowAnonymous]
         [HttpGet("{filePath}")]
         public IActionResult Get(string filePath)
         {
@@ -28,23 +30,25 @@ namespace QRTicketGenerator.API.Controllers
             {
                 return NotFound();
             }
-            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-            return File(fileBytes, "application/force-download", "image.pdf");
+            byte[] fileBytes =  _imageService.GetImageAsync(filePath, "uploads");
+            //System.IO.File.ReadAllBytes("uploads/"+filePath);
+            return  File(fileBytes, "image/png", "image.png");
         }
 
         // POST api/<TicketImageController>
+        [AllowAnonymous]
         [HttpPost]
         [RequestSizeLimit(200 * 1024 * 1024)]
         [RequestFormLimits(MultipartBodyLengthLimit = 209715200)]
-        public  IActionResult Post(IFormFile file)
+        public  async Task<IActionResult> Post(IFormFile file)
         {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            //var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
             // save file to uploads folder
             if (file == null)
             {
                 return BadRequest("File is missing");
             }
-            string filePath = _imageService.UploadImage(file);
+            string filePath = await _imageService.UploadImage(file, "uploads");
             return Ok(filePath);
         }
 

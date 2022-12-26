@@ -4,8 +4,7 @@ namespace QRTicketGenerator.API.Dtos
 {
     public class TicketDesignDto
     {
-        [JsonIgnore]
-        public string DesignFilePath { get; set; } = "uploads/TicketDesign.pdf";
+        public string DesignFilePath { get; set; } = "TicketTemplate.png";
         public float QrCodeX { get; set; } = 340;
         public float QrCodeY { get; set; } = 30;
         public int ValueCount { get; set; } = 0;

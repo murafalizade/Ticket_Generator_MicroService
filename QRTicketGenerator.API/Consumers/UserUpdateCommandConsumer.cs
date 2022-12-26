@@ -18,10 +18,11 @@ namespace QRTicketGenerator.API.Consumers
         }
         public async Task Consume(ConsumeContext<UserCreateCommand> context)
         {
+            User user = await _users.Find(s => s.Id == context.Message.Id).FirstOrDefaultAsync();
             await _users.ReplaceOneAsync(x => x.Id == context.Message.Id, new User()
             {
                 Id = context.Message.Id,
-                CoinCount = context.Message.CoinCount,
+                CoinCount = user.CoinCount + context.Message.CoinCount,
                 isPremium = context.Message.isPremium
             });
         }

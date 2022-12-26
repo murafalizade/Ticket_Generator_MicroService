@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QRTicketGenerator.Orders.Models;
 using QRTicketGenerator.Shared.Messages;
@@ -23,7 +22,6 @@ namespace QRTicketGenerator.Orders.Controllers
             _sendEndPointProvider = sendEndpointProvider;
         }
         [HttpPost("orderId")]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Pay(int orderId)
         {
             Order order = await _orderRepository.GetOrderById(orderId);

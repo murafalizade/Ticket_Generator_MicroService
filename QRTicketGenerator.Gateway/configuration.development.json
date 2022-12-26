@@ -15,7 +15,8 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "GatewayIdenditySchema",
         "AllowedScopes": [ "Ticket_fullpermissions" ]
-      }
+      },
+      "SwaggerKey": "ticket"
     },
     {
       "DownstreamPathTemplate": "/api/{everything}",
@@ -32,10 +33,33 @@
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "GatewayIdenditySchema",
         "AllowedScopes": [ "Order_fullpermissions" ]
-      }
+      },
+      "SwaggerKey": "order"
     }
   ],
   "GlobalConfiguration": {
     "BaseUrl": "https://localhost:5000"
-  }
+  },
+  "SwaggerEndPoints": [
+    {
+      "Key": "ticket",
+      "Config": [
+        {
+          "Name": "Tickets API",
+          "Version": "v1",
+          "Url": "https://localhost:5002/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "order",
+      "Config": [
+        {
+          "Name": "Orders API",
+          "Version": "v1",
+          "Url": "https://localhost:5003/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
 }

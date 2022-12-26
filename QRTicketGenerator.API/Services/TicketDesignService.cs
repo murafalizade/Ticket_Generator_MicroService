@@ -42,7 +42,6 @@ namespace QRTicketGenerator.API.Services
             List<TicketDesign> ticketDesigns = await _ticketDesigns.Find(x=> x.Userid == userId).ToListAsync();
 
                 return  ResponseDto<List<TicketDesign>>.Success(ticketDesigns,200);
-
         }
 
         public async Task<ResponseDto<TicketDesign>> GetById(string id, string userId)

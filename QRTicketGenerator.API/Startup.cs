@@ -14,10 +14,10 @@ using Swashbuckle.AspNetCore.Filters;
 
 namespace QRTicketGenerator.API
 {
-    public interface ISecondBus :
-    IBus
-{
-}
+    public interface ISecondBus : IBus
+    {
+    }
+    
     public class Startup
     {
         public Startup(IConfiguration configuration)

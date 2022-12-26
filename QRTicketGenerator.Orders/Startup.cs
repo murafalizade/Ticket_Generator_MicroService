@@ -46,7 +46,7 @@ namespace QRTicketGenerator.Orders
                 {
                     option.Authority = "https://localhost:5001";
                     option.Audience = "Order_aud";
-                    //option.Audience = "https://localhost:5001/resources";
+                    option.Audience = "https://localhost:5001/resources";
                     option.RequireHttpsMetadata = false;
 
                 });
