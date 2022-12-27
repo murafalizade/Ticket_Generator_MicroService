@@ -18,6 +18,10 @@ class OrderRepository :IOrderRepository
         var orderToAdd = _mapper.Map<Order>(order);
         Product product = await _context.Products.FirstOrDefaultAsync(p => p.Id == order.ProductId);
         orderToAdd.UserId = userId;
+        if(product == null)
+        {
+            return;
+        }
         if(order.Count >= product.MinCount)
         {
             orderToAdd.TotalPrice = product.Price * order.Count;

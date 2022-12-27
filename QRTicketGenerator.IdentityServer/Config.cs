@@ -65,8 +65,8 @@ namespace Project2
                     AllowOfflineAccess = true,
                     // allow scope add profile email of user
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                    AllowedScopes = {IdentityServerConstants.StandardScopes.Email, IdentityServerConstants.StandardScopes.Profile, " Order_fullpermissions",
-                    " Ticket_fullpermissions", " gateway_fullpermissions", IdentityServerConstants.LocalApi.ScopeName,
+                    AllowedScopes = {IdentityServerConstants.StandardScopes.Email, IdentityServerConstants.StandardScopes.Profile, "Order_fullpermissions",
+                    "Ticket_fullpermissions", "gateway_fullpermissions", IdentityServerConstants.LocalApi.ScopeName,
                      IdentityServerConstants.StandardScopes.OpenId,IdentityServerConstants.StandardScopes.OfflineAccess,"roles"},
                      RefreshTokenUsage = TokenUsage.ReUse,
                 }

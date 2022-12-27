@@ -26,7 +26,7 @@ namespace QRTicketGenerator.Gateway
                 {
                     option.Authority = "https://localhost:5001";
                     option.Audience = "gateway_aud";
-                    option.Audience = "https://localhost:5001/resources";
+                    //option.Audience = "https://localhost:5001/resources";
                     option.RequireHttpsMetadata = false;
                 });
             services.AddControllers();
@@ -35,6 +35,7 @@ namespace QRTicketGenerator.Gateway
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+              //  c.OperationFilter<SecurityRequirementsOperationFilter>();
             });
         }
 
